@@ -1,3 +1,5 @@
+use svg::node::element::path::{Command, Position};
+
 use crate::Operation::{Forward, Home, Noop, TurnLeft, TurnRight};
 use crate::Orientation::{East, North, South, West};
 
@@ -101,6 +103,28 @@ fn parse(input: &str) -> Vec<Operation> {
         steps.push(step);
     }
     steps
+}
+fn convert(operations: &Vec<Operation>) -> Vec<Command> {
+    let mut turtle = Artist::new();
+
+    let mut path_data = Vec::<Command>::with_capacity(operations.len());
+    let start_at_home = Command::Move(Position::Absolute, (HOME_X, HOME_Y).into());
+    path_data.push(start_at_home);
+    for op in operations {
+        match *op {
+            Forward(distance) => turtle.forward(distance),
+            TurnLeft => turtle.turn_left(),
+            TurnRight => turtle.turn_right(),
+            Home => turtle.home(),
+            Noop(byte) => {
+                eprintln!("warning: illegal byte encountered: {:?}", byte);
+            }
+        };
+        let path_segment = Command::Line(Position::Absolute, (turtle.x, turtle.y).into());
+        path_data.push(path_segment);
+        turtle.wrap();
+    }
+    path_data
 }
 fn main() {
     println!("Hello, world!");
