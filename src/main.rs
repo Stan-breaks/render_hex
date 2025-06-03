@@ -52,6 +52,38 @@ impl Artist {
             East => self.x -= distance,
         }
     }
+    fn turn_right(&mut self) {
+        self.heading = match self.heading {
+            North => East,
+            South => West,
+            West => North,
+            East => South,
+        }
+    }
+    fn turn_left(&mut self) {
+        self.heading = match self.heading {
+            North => West,
+            South => East,
+            West => South,
+            East => North,
+        }
+    }
+    fn wrap(&mut self) {
+        if self.x < 0 {
+            self.x = HOME_X;
+            self.heading = West;
+        } else if self.x > WIDTH {
+            self.x = HOME_X;
+            self.heading = East;
+        }
+        if self.y < 0 {
+            self.y = HOME_X;
+            self.heading = North;
+        } else if self.y > HEIGHT {
+            self.y = HOME_X;
+            self.heading = South;
+        }
+    }
 }
 fn main() {
     println!("Hello, world!");
