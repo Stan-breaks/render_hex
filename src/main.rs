@@ -1,4 +1,7 @@
-use svg::node::element::path::{Command, Position};
+use svg::Document;
+use svg::node::element::path::{Command, Data, Position};
+use svg::node::element::tag::Path;
+use svg::node::element::{Path, Rectangle};
 
 use crate::Operation::{Forward, Home, Noop, TurnLeft, TurnRight};
 use crate::Orientation::{East, North, South, West};
@@ -125,6 +128,34 @@ fn convert(operations: &Vec<Operation>) -> Vec<Command> {
         turtle.wrap();
     }
     path_data
+}
+fn generate_svg(path_data: Vec<Command>) -> Document {
+    let background = Rectangle::new()
+        .set("x", 0)
+        .set("y", 0)
+        .set("width", WIDTH)
+        .set("height", HEIGHT)
+        .set("fill", "#ffffff");
+    let border = background
+        .clone()
+        .set("fill-opacity", "0.0")
+        .set("stroke", "#cccccc")
+        .set("stroke-width", 3 * STROKE_WIDTH);
+    let sketch = Path::new()
+        .set("fill", "none")
+        .set("stroke", "#cccccc")
+        .set("stroke-width", STROKE_WIDTH)
+        .set("stroke-opacity", "0.9")
+        .set("d", Data::from(path_data));
+    let document = Document::new()
+        .set("viewbox", (0, 0, HEIGHT, WIDTH))
+        .set("height", HEIGHT)
+        .set("width", WIDTH)
+        .set("style", "style=\"outline: 5px solid #80000;\"")
+        .add(background)
+        .add(sketch)
+        .add(border);
+    document
 }
 fn main() {
     println!("Hello, world!");
